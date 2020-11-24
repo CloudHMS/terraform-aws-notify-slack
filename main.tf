@@ -65,9 +65,16 @@ resource "aws_sns_topic_subscription" "sns_notify_slack" {
   filter_policy = var.subscription_filter_policy
 }
 
+data "archive_file" "convert_py_to_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/functions/notify_slack.py"
+  output_path = "/tmp/functions_notify_slack.zip"
+}
+
 module "lambda" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "1.28.0"
+  # source  = "terraform-aws-modules/lambda/aws"
+  # version = "1.28.0"
+  source  = "git::https://github.com/CloudHMS/terraform-aws-lambda.git?ref=master"
 
   create = var.create
 
@@ -75,7 +82,8 @@ module "lambda" {
   description   = var.lambda_description
 
   handler                        = "notify_slack.lambda_handler"
-  source_path                    = "${path.module}/functions/notify_slack.py"
+  # source_path                    = "${path.module}/functions/notify_slack.py"
+  source_code_hash = "${data.archive_file.convert_py_to_zip.output_base64sha256}"
   runtime                        = "python3.8"
   timeout                        = 30
   kms_key_arn                    = var.kms_key_arn

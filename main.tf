@@ -67,7 +67,7 @@ resource "aws_sns_topic_subscription" "sns_notify_slack" {
 
 data "archive_file" "convert_py_to_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/functions/notify_slack.py"
+  source_dir  = "${path.module}/functions/"
   output_path = "/tmp/functions_notify_slack.zip"
 }
 

@@ -74,7 +74,6 @@ data "archive_file" "convert_py_to_zip" {
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "1.28.0"
-  # source  = "git::https://github.com/CloudHMS/terraform-aws-lambda.git?ref=master"
 
   create = var.create
 
@@ -82,7 +81,7 @@ module "lambda" {
   description   = var.lambda_description
 
   handler                        = "notify_slack.lambda_handler"
-  local_existing_package         = data.archive_file.convert_py_to_zip.output_base64sha256
+  local_existing_package         = data.archive_file.convert_py_to_zip.output_path
   runtime                        = "python3.8"
   timeout                        = 30
   kms_key_arn                    = var.kms_key_arn

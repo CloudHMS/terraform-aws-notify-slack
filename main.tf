@@ -73,7 +73,7 @@ data "archive_file" "convert_py_to_zip" {
 
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "1.28.0"
+  version = "1.37.0"
 
   create = var.create
 

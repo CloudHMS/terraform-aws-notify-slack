@@ -65,15 +65,17 @@ resource "aws_sns_topic_subscription" "sns_notify_slack" {
   filter_policy = var.subscription_filter_policy
 }
 
-data "archive_file" "convert_py_to_zip" {
-  type        = "zip"
-  source_dir  = "${path.module}/functions/"
-  output_path = "/tmp/functions_notify_slack.zip"
+resource "null_resource" "remoteExecProvisionerWFolder" {
+
+  provisioner "file" {
+    source      = "${path.module}/functions/notify_slack.py"
+    destination = "/tmp/notify_slack.py"
+  }
 }
 
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "1.37.0"
+  version = "1.28.0"
 
   create = var.create
 
@@ -81,7 +83,7 @@ module "lambda" {
   description   = var.lambda_description
 
   handler                        = "notify_slack.lambda_handler"
-  local_existing_package         = data.archive_file.convert_py_to_zip.output_path
+  source_path                    = "/tmp/notify_slack.py"
   runtime                        = "python3.8"
   timeout                        = 30
   kms_key_arn                    = var.kms_key_arn
